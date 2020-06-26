@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name: "etutsmon",
+    name: "bkmmon",
     script: './index.js',
     watch: './index.js'
   }]
