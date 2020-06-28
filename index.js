@@ -52,7 +52,7 @@ const CMDARR = {
     },
 };
 
-app.get('/', (req, res) => {
+app.get(BASE_FOLDER, (req, res) => {
     routeList = app._router.stack.filter(a => {
         if (a.route != null) {
             if (a.route.path != null && a.route.path != "/") return true;
@@ -66,8 +66,8 @@ app.get('/', (req, res) => {
 
     htmlData = "<h4>Welcome to eTuTs Monitoring Service</h4>";
     htmlData += "<ul>";
-    routeList.forEach(a => {
-        t = a.substr(1);
+    _.each(CMDARR, (b, a) => {
+        t = a;
         htmlData += `<li><a href='${a}'>${t}</a></li>`;
     });
     htmlData += "</ul>";
