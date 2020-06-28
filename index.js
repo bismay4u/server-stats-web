@@ -7,6 +7,51 @@ const host = "0.0.0.0";
 const port = 9999
 const debug = false;
 
+const BASE_FOLDER = "/stats";
+
+const CMDARR = {
+    "ls": function(res) {
+        runCmd("ls", ["-1"], function(results) {
+            printResults(res, results);
+        });
+    },
+    "vnstat": function(res) {
+        runCmd("vnstat", false, function(results) {
+            printResults(res, results);
+        });
+    },
+    "vmstat": function(res) {
+        runCmd("vmstat", ["-wt"], function(results) {
+            printResults(res, results);
+        });
+    },
+    "date": function(res) {
+        runCmd("date", false, function(results) {
+            printResults(res, results);
+        });
+    },
+    "ram": function(res) {
+        runCmd("free", "-h", function(results) {
+            printResults(res, results);
+        });
+    },
+    "ps": function(res) {
+        runCmd("ps", ["-aux"], function(results) {
+            printResults(res, results);
+        });
+    },
+    "pm2": function(res) {
+        runCmd("pm2", ["ps"], function(results) {
+            printResults(res, results);
+        });
+    },
+    "netstat": function(res) {
+        runCmd("netstat", ["-altp"], function(results) {
+            printResults(res, results);
+        });
+    },
+};
+
 app.get('/', (req, res) => {
     routeList = app._router.stack.filter(a => {
         if (a.route != null) {
@@ -38,46 +83,11 @@ app.get('/', (req, res) => {
     res.send(htmlData);
 });
 
-app.get('/vnstat', (req, res) => {
-    runCmd("vnstat", false, function(results) {
-        printResults(res, results);
-    });
-});
+app.get(BASE_FOLDER+'/:cmdkey', (req, res) => {
+    cmdKey = req.params['cmdkey'];
 
-app.get('/vmstat', (req, res) => {
-    runCmd("vmstat", ["-wt"], function(results) {
-        printResults(res, results);
-    });
-});
-
-app.get('/date', (req, res) => {
-    runCmd("date", false, function(results) {
-        printResults(res, results);
-    });
-});
-
-app.get('/ram', (req, res) => {
-    runCmd("free", "-h", function(results) {
-        printResults(res, results);
-    });
-});
-
-app.get('/ps', (req, res) => {
-    runCmd("ps", ["-aux"], function(results) {
-        printResults(res, results);
-    });
-});
-
-app.get('/pm2', (req, res) => {
-    runCmd("pm2", ["ps"], function(results) {
-        printResults(res, results);
-    });
-});
-
-app.get('/netstat', (req, res) => {
-    runCmd("netstat", ["-altp"], function(results) {
-        printResults(res, results);
-    });
+    if(CMDARR[cmdKey]!=null) CMDARR[cmdKey](res);
+    else res.send("Command Not Found");
 });
 
 function printResults(res, results, reloadTime) {
